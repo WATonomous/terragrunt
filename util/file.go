@@ -584,10 +584,19 @@ func (err PathIsNotFile) Error() string {
 // Terraform 0.14 now generates a lock file when you run `terraform init`.
 // If any such file exists, this function will copy the lock file to the destination folder
 func CopyLockFile(sourceFolder string, destinationFolder string, logger *logrus.Entry) error {
-	sourceLockFilePath := JoinPath(sourceFolder, TerraformLockFile)
-	destinationLockFilePath := JoinPath(destinationFolder, TerraformLockFile)
+	sourceLockFilePath, sourceErr := filepath.Abs(JoinPath(sourceFolder, TerraformLockFile))
+	destinationLockFilePath, destErr := filepath.Abs(JoinPath(destinationFolder, TerraformLockFile))
 
-	if FileExists(sourceLockFilePath) {
+	if sourceErr != nil {
+		return errors.WithStackTrace(sourceErr)
+	}
+	if destErr != nil {
+		return errors.WithStackTrace(destErr)
+	}
+
+	if sourceLockFilePath == destinationLockFilePath {
+		logger.Debugf("Source and destination lock file paths are the same: %s. Not copying.", sourceLockFilePath)
+	} else if FileExists(sourceLockFilePath) {
 		logger.Debugf("Copying lock file from %s to %s", sourceLockFilePath, destinationFolder)
 		return CopyFile(sourceLockFilePath, destinationLockFilePath)
 	}
