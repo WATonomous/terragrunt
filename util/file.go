@@ -616,7 +616,7 @@ func CopyLockFile(sourceFolder string, destinationFolder string, logger *logrus.
 		logger.Debugf("Source and destination lock file contents are the same. Not copying.")
 		return nil
 	}
-	
+
 	logger.Debugf("Copying lock file from %s to %s", sourceLockFilePath, destinationFolder)
 	return WriteFileWithSamePermissions(sourceLockFilePath, destinationLockFilePath, sourceContents)
 }
