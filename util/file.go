@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bytes"
 	"encoding/gob"
 	"io"
 	"os"
@@ -618,7 +619,7 @@ func CopyLockFile(sourceFolder string, destinationFolder string, logger *logrus.
 		return errors.WithStackTrace(destReadErr)
 	}
 
-	if string(sourceContents) == string(destinationContents) {
+	if bytes.Equal(sourceContents, destinationContents) {
 		logger.Debugf("Source and destination lock file contents are the same. Not copying.")
 		return nil
 	}
