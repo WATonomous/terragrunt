@@ -607,6 +607,12 @@ func CopyLockFile(sourceFolder string, destinationFolder string, logger *logrus.
 	if sourceReadErr != nil {
 		return errors.WithStackTrace(sourceReadErr)
 	}
+
+	if !FileExists(destinationLockFilePath) {
+		logger.Debugf("Destination lock file does not exist: %s. Copying.", destinationLockFilePath)
+		return WriteFileWithSamePermissions(sourceLockFilePath, destinationLockFilePath, sourceContents)
+	}
+
 	destinationContents, destReadErr := os.ReadFile(destinationLockFilePath)
 	if destReadErr != nil {
 		return errors.WithStackTrace(destReadErr)
